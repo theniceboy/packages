@@ -427,6 +427,19 @@
                                         }];
 }
 
+- (void)mapView:(GMSMapView *)mapView
+    didTapPOIWithPlaceID:(NSString *)placeID
+                    name:(NSString *)name
+                location:(CLLocationCoordinate2D)location {
+  FGMPlatformPointOfInterest *poi =
+      [FGMPlatformPointOfInterest makeWithPlaceId:placeID
+                                             name:name
+                                         position:FGMGetPigeonLatLngForCoordinate(location)];
+  [self.dartCallbackHandler didTapPointOfInterest:poi
+                                       completion:^(FlutterError *_Nullable _){
+                                       }];
+}
+
 - (void)interpretMapConfiguration:(FGMPlatformMapConfiguration *)config {
   FGMPlatformCameraTargetBounds *cameraTargetBounds = config.cameraTargetBounds;
   if (cameraTargetBounds) {

@@ -30,6 +30,7 @@ export 'pattern_item.dart';
 export 'polygon.dart';
 export 'polygon_updates.dart';
 export 'polyline.dart';
+export 'point_of_interest.dart';
 export 'polyline_updates.dart';
 export 'screen_coordinate.dart';
 export 'tile.dart';

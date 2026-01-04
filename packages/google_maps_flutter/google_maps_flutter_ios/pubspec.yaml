@@ -19,7 +19,8 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  google_maps_flutter_platform_interface: ^2.13.0
+  google_maps_flutter_platform_interface:
+    path: ../google_maps_flutter_platform_interface
   stream_transform: ^2.0.0
 
 dev_dependencies:

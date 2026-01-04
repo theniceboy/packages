@@ -133,6 +133,7 @@ class GoogleMap extends StatefulWidget {
     this.onCameraIdle,
     this.onTap,
     this.onLongPress,
+    this.onPoiTap,
     this.cloudMapId,
   });
 
@@ -289,6 +290,12 @@ class GoogleMap extends StatefulWidget {
 
   /// Called every time a [GoogleMap] is long pressed.
   final ArgumentCallback<LatLng>? onLongPress;
+
+  /// Called when a Point of Interest is tapped.
+  ///
+  /// This callback provides information about the tapped POI, including its
+  /// place ID, name, and position.
+  final ArgumentCallback<PointOfInterest>? onPoiTap;
 
   /// True if a "My Location" layer should be shown on the map.
   ///
@@ -694,6 +701,13 @@ class _GoogleMapState extends State<GoogleMap> {
     final ArgumentCallback<Cluster>? onClusterTap = clusterManager.onClusterTap;
     if (onClusterTap != null) {
       onClusterTap(cluster);
+    }
+  }
+
+  void onPoiTap(PointOfInterest poi) {
+    final ArgumentCallback<PointOfInterest>? onPoiTap = widget.onPoiTap;
+    if (onPoiTap != null) {
+      onPoiTap(poi);
     }
   }
 }

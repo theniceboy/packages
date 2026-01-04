@@ -260,6 +260,23 @@ class GoogleMapController {
     ) {
       assert(event.latLng != null);
       if (!_streamController.isClosed) {
+        // Check if this is a POI (IconMouseEvent) click
+        if (_isIconMouseEvent(event)) {
+          final iconEvent = event as gmaps.IconMouseEvent;
+          if (iconEvent.placeId != null) {
+            _streamController.add(
+              PoiTapEvent(
+                _mapId,
+                PointOfInterest(
+                  placeId: iconEvent.placeId!,
+                  name: '',
+                  position: gmLatLngToLatLng(event.latLng!),
+                ),
+              ),
+            );
+            return;
+          }
+        }
         _streamController.add(
           MapTapEvent(_mapId, gmLatLngToLatLng(event.latLng!)),
         );
@@ -648,6 +665,12 @@ class GoogleMapController {
   /// Returns true if the [InfoWindow] of the marker identified by [MarkerId] is shown.
   bool isInfoWindowShown(MarkerId markerId) {
     return _markersController?.isInfoWindowShown(markerId) ?? false;
+  }
+
+  // Helper to check if a click event is an IconMouseEvent (POI click)
+  bool _isIconMouseEvent(gmaps.MapMouseEventOrIconMouseEvent event) {
+    // Check if the event object has a 'placeId' property
+    return (event as JSObject).hasProperty('placeId'.toJS).toDart;
   }
 
   // Cleanup

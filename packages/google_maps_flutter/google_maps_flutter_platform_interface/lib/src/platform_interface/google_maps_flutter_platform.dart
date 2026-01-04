@@ -404,6 +404,11 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('onGroundOverlayTap() has not been implemented.');
   }
 
+  /// A Point of Interest (POI) has been tapped.
+  Stream<PoiTapEvent> onPoiTap({required int mapId}) {
+    throw UnimplementedError('onPoiTap() has not been implemented.');
+  }
+
   /// Dispose of whatever resources the `mapId` is holding on to.
   void dispose({required int mapId}) {
     throw UnimplementedError('dispose() has not been implemented.');

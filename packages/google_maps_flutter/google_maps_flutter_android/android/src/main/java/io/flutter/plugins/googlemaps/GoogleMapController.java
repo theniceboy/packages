@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.maps.android.clustering.Cluster;
@@ -384,6 +385,17 @@ class GoogleMapController
   }
 
   @Override
+  public void onPoiClick(@NonNull PointOfInterest poi) {
+    flutterApi.onPoiTap(
+        new Messages.PlatformPointOfInterest.Builder()
+            .setPlaceId(poi.placeId)
+            .setName(poi.name)
+            .setPosition(Convert.latLngToPigeon(poi.latLng))
+            .build(),
+        new NoOpVoidResult());
+  }
+
+  @Override
   public void dispose() {
     if (disposed) {
       return;
@@ -416,6 +428,7 @@ class GoogleMapController
     googleMap.setOnMapClickListener(listener);
     googleMap.setOnMapLongClickListener(listener);
     googleMap.setOnGroundOverlayClickListener(listener);
+    googleMap.setOnPoiClickListener(listener);
   }
 
   @VisibleForTesting

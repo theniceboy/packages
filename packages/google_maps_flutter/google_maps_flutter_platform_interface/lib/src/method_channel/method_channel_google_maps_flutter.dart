@@ -173,6 +173,11 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return _events(mapId).whereType<ClusterTapEvent>();
   }
 
+  @override
+  Stream<PoiTapEvent> onPoiTap({required int mapId}) {
+    return _events(mapId).whereType<PoiTapEvent>();
+  }
+
   Future<dynamic> _handleMethodCall(MethodCall call, int mapId) async {
     switch (call.method) {
       case 'camera#onMoveStarted':
@@ -302,6 +307,18 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
               markerIds,
               position: position,
               bounds: bounds,
+            ),
+          ),
+        );
+      case 'poi#onTap':
+        final Map<String, Object?> arguments = _getArgumentDictionary(call);
+        _mapEventStreamController.add(
+          PoiTapEvent(
+            mapId,
+            PointOfInterest(
+              placeId: arguments['placeId']! as String,
+              name: arguments['name']! as String,
+              position: LatLng.fromJson(arguments['position'])!,
             ),
           ),
         );

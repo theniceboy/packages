@@ -118,6 +118,14 @@ class GoogleMapController {
     );
     _streamSubscriptions.add(
       GoogleMapsFlutterPlatform.instance
+          .onGroundOverlayTap(mapId: mapId)
+          .listen(
+            (GroundOverlayTapEvent e) =>
+                _googleMapState.onGroundOverlayTap(e.value),
+          ),
+    );
+    _streamSubscriptions.add(
+      GoogleMapsFlutterPlatform.instance
           .onTap(mapId: mapId)
           .listen((MapTapEvent e) => _googleMapState.onTap(e.position)),
     );
@@ -132,6 +140,11 @@ class GoogleMapController {
       GoogleMapsFlutterPlatform.instance
           .onClusterTap(mapId: mapId)
           .listen((ClusterTapEvent e) => _googleMapState.onClusterTap(e.value)),
+    );
+    _streamSubscriptions.add(
+      GoogleMapsFlutterPlatform.instance
+          .onPoiTap(mapId: mapId)
+          .listen((PoiTapEvent e) => _googleMapState.onPoiTap(e.value)),
     );
   }
 

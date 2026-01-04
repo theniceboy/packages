@@ -157,6 +157,19 @@ class PlatformCluster {
   final List<String> markerIds;
 }
 
+/// Pigeon equivalent of PointOfInterest.
+class PlatformPointOfInterest {
+  PlatformPointOfInterest({
+    required this.placeId,
+    required this.name,
+    required this.position,
+  });
+
+  final String placeId;
+  final String name;
+  final PlatformLatLng position;
+}
+
 /// Pigeon equivalent of the ClusterManager class.
 class PlatformClusterManager {
   PlatformClusterManager({required this.identifier});
@@ -783,6 +796,10 @@ abstract class MapsCallbackApi {
   /// Called when a ground overlay is tapped.
   @ObjCSelector('didTapGroundOverlayWithIdentifier:')
   void onGroundOverlayTap(String groundOverlayId);
+
+  /// Called when a point of interest is tapped.
+  @ObjCSelector('didTapPointOfInterest:')
+  void onPoiTap(PlatformPointOfInterest poi);
 
   /// Called to get data for a map tile.
   @async
