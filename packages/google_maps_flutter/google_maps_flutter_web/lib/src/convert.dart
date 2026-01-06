@@ -423,12 +423,91 @@ void _cleanUpBitmapConversionCaches() {
   _bitmapBlobUrlCache.clear();
 }
 
+// Converts a hue value (0-360) to an RGB hex color string.
+// The hue represents a position on the color wheel where:
+// 0 = red, 60 = yellow, 120 = green, 180 = cyan, 240 = blue, 300 = magenta
+String _hueToHexColor(double hue) {
+  // Normalize hue to 0-360 range
+  hue = hue % 360;
+  if (hue < 0) {
+    hue += 360;
+  }
+
+  // Convert HSL to RGB (with S=100%, L=50% for vivid colors like Google's markers)
+  const c = 1.0; // Chroma (saturation * lightness factor)
+  final double x = c * (1 - ((hue / 60) % 2 - 1).abs());
+  const m = 0.0; // Lightness adjustment
+
+  double r, g, b;
+  if (hue < 60) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (hue < 120) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (hue < 180) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (hue < 240) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (hue < 300) {
+    r = x;
+    g = 0;
+    b = c;
+  } else {
+    r = c;
+    g = 0;
+    b = x;
+  }
+
+  final int ri = ((r + m) * 255).round();
+  final int gi = ((g + m) * 255).round();
+  final int bi = ((b + m) * 255).round();
+
+  return '#${ri.toRadixString(16).padLeft(2, '0')}'
+      '${gi.toRadixString(16).padLeft(2, '0')}'
+      '${bi.toRadixString(16).padLeft(2, '0')}';
+}
+
+// Generates an SVG marker icon with the specified color.
+// Returns a data URL that can be used as the icon URL.
+String _generateColoredMarkerSvg(String hexColor) {
+  // SVG path for a Google Maps-style pin marker
+  const svg = '''
+<svg xmlns="http://www.w3.org/2000/svg" width="27" height="43" viewBox="0 0 27 43">
+  <path fill="{{COLOR}}" stroke="#FFFFFF" stroke-width="1" d="M13.5 1C6.596 1 1 6.596 1 13.5c0 2.148.556 4.168 1.53 5.926L13.5 42l10.97-22.574A12.42 12.42 0 0 0 26 13.5C26 6.596 20.404 1 13.5 1z"/>
+  <circle fill="#FFFFFF" cx="13.5" cy="13.5" r="5"/>
+</svg>
+''';
+  final String coloredSvg = svg.replaceAll('{{COLOR}}', hexColor);
+  final String encoded = Uri.encodeComponent(coloredSvg);
+  return 'data:image/svg+xml,$encoded';
+}
+
 // Converts a [BitmapDescriptor] into a [gmaps.Icon] that can be used in Markers.
 Future<gmaps.Icon?> _gmIconFromBitmapDescriptor(
   BitmapDescriptor bitmapDescriptor,
   Offset anchor,
 ) async {
   gmaps.Icon? icon;
+
+  // Handle DefaultMarker (from defaultMarker and defaultMarkerWithHue)
+  if (bitmapDescriptor is DefaultMarker) {
+    final double hue = bitmapDescriptor.hue?.toDouble() ?? 0.0;
+    final String hexColor = _hueToHexColor(hue);
+    final String svgUrl = _generateColoredMarkerSvg(hexColor);
+    icon = gmaps.Icon()
+      ..url = svgUrl
+      ..size = gmaps.Size(27, 43)
+      ..scaledSize = gmaps.Size(27, 43)
+      ..anchor = gmaps.Point(13.5, 43);
+    return icon;
+  }
 
   if (bitmapDescriptor is MapBitmap) {
     final String url = urlFromMapBitmap(bitmapDescriptor);
