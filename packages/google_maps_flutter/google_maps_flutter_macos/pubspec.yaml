@@ -1,0 +1,26 @@
+name: google_maps_flutter_macos
+description: macOS platform implementation of google_maps_flutter using WKWebView
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
+
+flutter:
+  plugin:
+    implements: google_maps_flutter
+    platforms:
+      macos:
+        pluginClass: GoogleMapsFlutterMacosPlugin
+        dartPluginClass: GoogleMapsFlutterMacOS
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_maps_flutter_platform_interface:
+    path: ../google_maps_flutter_platform_interface
+  stream_transform: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

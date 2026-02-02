@@ -17,6 +17,8 @@ flutter:
         default_package: google_maps_flutter_ios
       web:
         default_package: google_maps_flutter_web
+      macos:
+        default_package: google_maps_flutter_macos
 
 dependencies:
   flutter:
@@ -27,6 +29,8 @@ dependencies:
     path: ../google_maps_flutter_ios
   google_maps_flutter_platform_interface:
     path: ../google_maps_flutter_platform_interface
+  google_maps_flutter_macos:
+    path: ../google_maps_flutter_macos
   google_maps_flutter_web:
     path: ../google_maps_flutter_web
 
