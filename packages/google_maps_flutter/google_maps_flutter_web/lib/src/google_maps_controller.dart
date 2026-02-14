@@ -139,6 +139,7 @@ class GoogleMapController {
   GroundOverlaysController? _groundOverlaysController;
 
   StreamSubscription<void>? _onClickSubscription;
+  gmaps.MapsEventListener? _onClickRawListener;
   StreamSubscription<void>? _onRightClickSubscription;
   StreamSubscription<void>? _onBoundsChangedSubscription;
   StreamSubscription<void>? _onIdleSubscription;
@@ -255,15 +256,16 @@ class GoogleMapController {
         _streamController.add(WebMapReadyEvent(_mapId));
       }
     });
-    _onClickSubscription = map.onClick.listen((
-      gmaps.MapMouseEventOrIconMouseEvent event,
-    ) {
-      assert(event.latLng != null);
-      if (!_streamController.isClosed) {
-        // Check if this is a POI (IconMouseEvent) click
+    _onClickRawListener = gmaps.event.addListener(
+      map,
+      'click',
+      ((gmaps.MapMouseEventOrIconMouseEvent event) {
+        assert(event.latLng != null);
+        if (_streamController.isClosed) return;
         if (_isIconMouseEvent(event)) {
           final iconEvent = event as gmaps.IconMouseEvent;
           if (iconEvent.placeId != null) {
+            iconEvent.stop();
             _streamController.add(
               PoiTapEvent(
                 _mapId,
@@ -280,8 +282,8 @@ class GoogleMapController {
         _streamController.add(
           MapTapEvent(_mapId, gmLatLngToLatLng(event.latLng!)),
         );
-      }
-    });
+      }).toJS,
+    );
     _onRightClickSubscription = map.onRightclick.listen((
       gmaps.MapMouseEvent event,
     ) {
@@ -692,6 +694,8 @@ class GoogleMapController {
     _groundOverlaysController = null;
     _onClickSubscription?.cancel();
     _onClickSubscription = null;
+    _onClickRawListener?.remove();
+    _onClickRawListener = null;
     _onRightClickSubscription?.cancel();
     _onRightClickSubscription = null;
     _onBoundsChangedSubscription?.cancel();
